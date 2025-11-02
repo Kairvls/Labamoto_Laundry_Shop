@@ -1,0 +1,169 @@
+﻿@{
+    ViewBag.Title = "Owner Login - Labamoto Laundry Shop";
+}
+
+<style>
+/* Hide header/nav */
+header, nav.navbar, .navbar {
+    display: none !important;
+}
+
+    body {
+        width: 100%;
+        height: 100%;
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(145deg, #eef2ff, #d9e2ff);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+/* Login Card */
+.login-card {
+    width: 100%;           /* scales with screen */
+    max-width: 420px;      /* fixed max width */
+    margin: auto;
+    padding: 40px 20px;    /* better padding for smaller screens */
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+    background: white;
+    text-align: center;
+    box-sizing: border-box;
+
+}
+
+/* Close button (top-right) */
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 1.5rem;
+    color: #6c757d;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.2s ease;
+    z-index: 10;
+}
+.close-btn:hover {
+    color: red;
+    transform: scale(1.2);
+}
+
+/* Gradient button */
+    .gradient-btn {
+        background-image: linear-gradient( 45deg, hsl(236deg 97% 29%) 0%, hsl(241deg 86% 29%) 8%, hsl(244deg 85% 27%) 17%, hsl(246deg 84% 25%) 25%, hsl(248deg 83% 23%) 33%, hsl(250deg 82% 21%) 42%, hsl(252deg 81% 19%) 50%, hsl(253deg 80% 17%) 58%, hsl(255deg 78% 15%) 67%, hsl(257deg 78% 14%) 75%, hsl(261deg 81% 12%) 83%, hsl(267deg 88% 9%) 92%, hsl(272deg 100% 7%) 100% );
+        color: white !important;
+        border: none;
+        transition: 0.3s ease;
+        border-bottom-right-radius: 10px;
+        width: 100%; /* fills the input width */
+        max-width: 350px; /* optional max-width */
+        margin: 0 auto; /* center button */
+        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+    }
+        .gradient-btn:hover {
+            color: black !important;
+            background-image: linear-gradient( 45deg, hsl(240deg 100% 96%) 0%, hsl(240deg 100% 96%) 8%, hsl(240deg 100% 96%) 17%, hsl(240deg 100% 97%) 25%, hsl(240deg 100% 97%) 33%, hsl(241deg 100% 97%) 42%, hsl(241deg 100% 98%) 50%, hsl(241deg 100% 98%) 58%, hsl(241deg 100% 99%) 67%, hsl(241deg 100% 99%) 75%, hsl(241deg 100% 99%) 83%, hsl(241deg 100% 100%) 92%, hsl(0deg 0% 100%) 100% );
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+
+/* Brand logo */
+.brand-logo {
+    width: 80%;        /* scales with card */
+    max-width: 250px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+/* Input styling */
+.form-control {
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto 15px auto;
+    padding: 10px 12px;
+    box-sizing: border-box;
+}
+
+/* Bubble animation */
+.bubble {
+    position: absolute;
+    bottom: -100px;
+    background: rgba(80, 120, 255, 0.3);
+    border-radius: 50%;
+    animation: rise 8s infinite ease-in;
+    z-index: 0;
+}
+
+@@keyframes rise {
+    0% { transform: translateY(0) scale(1); opacity: 1; }
+    100% { transform: translateY(-120vh) scale(1.3); opacity: 0; }
+}
+
+/* Alert Styling */
+.alert-box {
+    margin: 0 20px 20px 20px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+}
+
+/* Responsive adjustments */
+@@media (max-width: 480px) {
+    .login-card {
+        padding: 30px 15px;
+    }
+    .gradient-btn, .form-control {
+        max-width: 100%; /* full width on small screens */
+    }
+}
+</style>
+
+<div class="d-flex align-items-center justify-content-center vh-100 position-relative">
+    <div id="bubble-container"></div>
+
+    <div class="login-card">
+        <!-- Close button -->
+        <a href="/Account/ChooseRole" class="close-btn">&times;</a>
+
+        <img src="~/Content/Images/labamoto-removebg.png" alt="Labamoto Logo" class="brand-logo mx-auto d-block" />
+        <h4 class="fw-bold text-primary mb-1" style="color: #071973 !important; ">Owner Login</h4>
+        <p class="text-muted mb-4">Welcome back, please log in</p>
+
+        <!-- Alert message -->
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger alert-box" role="alert">
+                @ViewBag.Error
+            </div>
+        }
+
+        <form method="post" action="/Account/OwnerLogin">
+            <input type="text" id="Username" name="Username" class="form-control" placeholder="Enter username" required />
+            <input type="password" id="Password" name="Password" class="form-control" placeholder="Enter password" required />
+            <button type="submit" class="btn gradient-btn py-2 fs-5">Login</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Bubble animation
+    function createBubble() {
+        const container = document.getElementById("bubble-container");
+        const bubble = document.createElement("div");
+        bubble.classList.add("bubble");
+
+        const size = Math.random() * 40 + 10;
+        bubble.style.width = `${size}px`;
+        bubble.style.height = `${size}px`;
+        bubble.style.left = `${Math.random() * 100}%`;
+        bubble.style.animationDuration = `${Math.random() * 4 + 5}s`;
+
+        container.appendChild(bubble);
+        setTimeout(() => bubble.remove(), 8000);
+    }
+
+    setInterval(createBubble, 400);
+</script>

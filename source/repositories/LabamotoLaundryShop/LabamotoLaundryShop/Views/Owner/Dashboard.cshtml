@@ -1,0 +1,88 @@
+﻿@{
+    ViewBag.Title = "Owner Dashboard - Labamoto Laundry Shop";
+}
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(120deg, #0a3d91, #4eb9f7);
+        min-height: 100vh;
+        color: white;
+        margin: 0;
+        padding: 0;
+    }
+
+    .dashboard-container {
+        max-width: 1000px;
+        margin: 50px auto;
+        background: white;
+        color: #333;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    h2 {
+        color: #0a3d91;
+        font-weight: 700;
+    }
+
+    .logout-btn {
+        background: linear-gradient(45deg, #0a3d91, #4eb9f7);
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 25px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+        .logout-btn:hover {
+            opacity: 0.9;
+        }
+
+    .stat-card {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+    }
+
+        .stat-card:hover {
+            transform: scale(1.03);
+        }
+</style>
+
+<div class="dashboard-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Welcome, @ViewBag.OwnerName 👋</h2>
+        <a href="/Account/Logout" class="logout-btn">Logout</a>
+    </div>
+
+    <p class="lead mb-4">Here’s an overview of your laundry business performance:</p>
+
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <h4>📦 Total Orders</h4>
+                <p class="fs-3 fw-bold text-primary">248</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="stat-card">
+                <h4>💰 Total Earnings</h4>
+                <p class="fs-3 fw-bold text-success">₱45,730</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="stat-card">
+                <h4>🧺 Active Orders</h4>
+                <p class="fs-3 fw-bold text-warning">12</p>
+            </div>
+        </div>
+    </div>
+</div>
