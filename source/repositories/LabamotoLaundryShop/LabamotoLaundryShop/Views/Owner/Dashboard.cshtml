@@ -12,97 +12,21 @@
         color: #333;
     }
 
-    /* --- NAVBAR --- */
-    .navbars {
-        background: linear-gradient(90deg,#e9f2ff,#ffffff);
-        padding: 12px 40px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        color: #1e293b;
-        border-bottom: 2px solid #dbe4f0;
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-    }
-
-    /* Brand Section */
-    .navbars-brand {
-        display: flex;
-        align-items: center;
-        font-weight: 700;
-        font-size: 22px;
-        color: #475569; /* Blue brand name */
-        text-decoration: none;
-        letter-spacing: 0.3px;
-    }
-
-
-    /* Navbar Links */
-    .navbars-links {
-        display: flex;
-        gap: 20px;
-    }
-
-        .navbars-links a {
-            color: #475569;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 15px;
-            position: relative;
-            padding: 8px 8px;
-            transition: all 0.3s ease;
-            border-radius: 6px;
-        }
-
-            .navbars-links a:hover {
-                background: rgba(255, 255, 255, 0.1);
-                color: #0b5ed7 !important;
-            }
-
-            .navbars-links a::after {
-                content: '';
-                position: absolute;
-                left: 0;
-                bottom: 4px;
-                width: 0%;
-                height: 2px;
-                background: #38bdf8; /* accent blue underline */
-                transition: width 0.3s ease;
-            }
-
-            .navbars-links a:hover::after {
-                width: 100%;
-            }
-
-    /* Logout Button */
-    .logout-btn {
-        background: #ffffff;
-        color: #0a3d91;
-        padding: 8px 16px;
-        border-radius: 6px;
-        text-decoration: none;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-
-        .logout-btn:hover {
-            background: #e2e8f0;
-        }
+    
 
     /* --- FORM WRAPPER --- */
     .dashboard-form {
         max-width: 1250px;
-        margin: 40px auto;
+        margin: 10px auto;
         background: #ffffff;
         border-radius: 12px;
         padding: 30px 40px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        box-shadow: 0 4px 3px rgba(0,0,0,0.08);
     }
 
     h2 {
         color: #475569;
-        font-weight: 700;
+        font-weight: 600;
         margin-bottom: 10px;
     }
 
@@ -124,7 +48,7 @@
         background: white;
         border-radius: 12px;
         padding: 25px;
-        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
         text-align: center;
         transition: transform 0.2s ease;
     }

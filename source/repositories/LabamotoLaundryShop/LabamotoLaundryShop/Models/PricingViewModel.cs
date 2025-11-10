@@ -12,7 +12,9 @@ namespace LabamotoLaundryShop.Models
         // Fees & surcharges
         public decimal RushServiceFee { get; set; }
         public decimal PickupFee { get; set; }
+        public decimal FreeDeliveryMinimum { get; set; }
         public decimal Discount { get; set; }
+        public decimal LoyaltyDiscount { get; set; }
         public decimal VAT { get; set; }
     }
 

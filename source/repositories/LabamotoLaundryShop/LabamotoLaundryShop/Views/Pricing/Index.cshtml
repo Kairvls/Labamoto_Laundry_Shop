@@ -3,20 +3,19 @@
     ViewBag.Title = "Pricing & Service Configuration";
     Layout = "~/Views/Shared/_OwnerLayout.cshtml";
     // Set default tab to RegularLaundry
-    string currentAction = ViewContext.RouteData.Values["action"]?.ToString();
-    if (string.IsNullOrEmpty(currentAction))
-    {
-        currentAction = "RegularLaundry";
-    }
+    var currentAction = ViewBag.CurrentAction ?? "RegularLaundry";
+
 }
 
 <style>
+
     /* Modern tab-style buttons */
     .pricing-tabs {
         display: flex;
         width: 100%;
         gap: 6px;
         margin-bottom: 1rem;
+        margin-bottom: 30px;
     }
 
     .pricing-tab {
@@ -29,8 +28,13 @@
         cursor: pointer;
         position: relative;
         transition: color 0.2s;
-        border: 1px solid blue;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
     }
+
+        .pricing-tab:hover {
+            color: #0d6efd;
+            border: 1px solid #0d6efd;
+        }
 
         .pricing-tab.active {
             color: #0d6efd;
@@ -46,10 +50,74 @@
                 background-color: #0d6efd;
                 border-radius: 3px 3px 0 0;
             }
+
+        .fees-form {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+
+        .form-title {
+            font-weight: 600;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .save-btn {
+            /*display: block;*/
+            width: 100%;
+            margin: 20px auto 0;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        @@media (max-width: 768px) {
+            .fees-form {
+                padding: 15px;
+            }
+            .form-row {
+                flex-direction: column;
+            }
+            .form-group {
+                width: 100%;
+            }
+        }
+
 </style>
 
-<div class="container mt-4">
-    <div class="pricing-container p-3 shadow-sm bg-white rounded">
+<div class="container mt-14 mb-4">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show mt-2">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    <div class="pricing-container shadow-sm bg-white rounded" style="padding: 30px 40px;">
 
         <a href="@Url.Action("Dashboard", "Owner")" class="btn btn-outline-secondary mb-3">← Back</a>
 
@@ -59,23 +127,26 @@
         <!-- Category Buttons as Modern Tabs -->
         <div class="pricing-tabs">
             <button class="pricing-tab @(currentAction=="RegularLaundry"?"active":"")"
-                    onclick="location.href='@Url.Action("RegularLaundry","Pricing")'">
+                    onclick="location.href='@Url.Action("Index","Pricing", new { currentAction="RegularLaundry" })'">
                 🧺 Regular Laundry
             </button>
-            
+
             <button class="pricing-tab @(currentAction=="SpecialItems"?"active":"")"
-                    onclick="location.href='@Url.Action("SpecialItems","Pricing")'">
+                    onclick="location.href='@Url.Action("Index","Pricing", new { currentAction="SpecialItems" })'">
                 👕 Special Items
             </button>
+
             <button class="pricing-tab @(currentAction=="DryClean"?"active":"")"
-                    onclick="location.href='@Url.Action("DryClean","Pricing")'">
+                    onclick="location.href='@Url.Action("Index","Pricing", new { currentAction="DryClean" })'">
                 🧥 Dry Clean
             </button>
+
             <button class="pricing-tab @(currentAction=="AddOns"?"active":"")"
-                    onclick="location.href='@Url.Action("AddOns","Pricing")'">
+                    onclick="location.href='@Url.Action("Index","Pricing", new { currentAction="AddOns" })'">
                 🧴 Add-ons & Fees
             </button>
         </div>
+
 
 
         <form method="post" class="w-100">
@@ -151,7 +222,7 @@
                                     <td>@item.MinimumKg kg</td>
                                     <td>@item.Status</td>
                                     <td>
-                                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editRegular-@item.PackageID">✏️ Edit</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editRegular-@item.PackageID">✏️ Edit</button>
                                         <a href="@Url.Action("TogglePackageStatus","Pricing", new { PackageID=item.PackageID })" class="btn btn-outline-warning btn-sm">🔁 Toggle</a>
                                     </td>
                                 </tr>
@@ -184,8 +255,15 @@
                                     <td>@item.ProcessingTime</td>
                                     <td>@item.Status</td>
                                     <td>
-                                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editSpecial-@item.SpecialItemID">✏️ Edit</button>
-                                        <a href="@Url.Action("DeleteSpecialItem","Pricing", new { SpecialItemID=item.SpecialItemID })" class="btn btn-outline-danger btn-sm">🗑 Delete</a>
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#updateSpecial-@item.SpecialItemID">✏️ Edit</button>
+                                        <!--<a href="@Url.Action("DeleteSpecialItem","Pricing", new { SpecialItemID=item.SpecialItemID })" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to delete this item?');">🗑 Delete</a>-->
+                                        <a href="javascript:void(0);"
+                                           class="btn btn-outline-danger btn-sm"
+                                           data-bs-toggle="modal"
+                                           data-bs-target="#deleteModal"
+                                           data-url="@Url.Action("DeleteSpecialItem","Pricing", new { SpecialItemID=item.SpecialItemID })">
+                                            🗑 Delete
+                                        </a>
                                     </td>
                                 </tr>
                             }
@@ -215,7 +293,7 @@
                                     <td>@item.ProcessingTime</td>
                                     <td>@item.Status</td>
                                     <td>
-                                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editDryClean-@item.DryCleanItemID">✏️ Edit</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editDryClean-@item.DryCleanItemID">✏️ Edit</button>
                                     </td>
                                 </tr>
                             }
@@ -242,15 +320,57 @@
                                 <tr>
                                     <td>@item.ServiceName</td>
                                     <td>@item.PriceType</td>
-                                    <td>@item.Price</td>
+                                    <td>₱ @item.Price</td>
                                     <td>@item.Status</td>
                                     <td>
-                                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editAddOn-@item.AddOnID">✏️ Edit</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editAddOn-@item.AddOnID">✏️ Edit</button>
                                     </td>
                                 </tr>
                             }
                         </tbody>
                     </table>
+                }
+                @* Service Fees & Surcharges *@
+                @if (currentAction == "AddOns")
+                {
+                    using (Html.BeginForm("UpdateFees", "Pricing", FormMethod.Post))
+                    {
+                        <div class="fees-form">
+                            <h5 class="form-title">Service Fees & Surcharges</h5>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Rush Service Surcharge (%)</label>
+                                    <input type="number" step="0.01" name="RushServiceFee" class="form-control" value="@Model.RushServiceFee" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Pickup & Delivery Fee</label>
+                                    <input type="number" step="0.01" name="PickupFee" class="form-control" value="@Model.PickupFee" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Free Delivery Minimum</label>
+                                    <input type="number" step="0.01" name="FreeDeliveryMinimum" class="form-control" value="@Model.FreeDeliveryMinimum" />
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Senior/PWD Discount (%)</label>
+                                    <input type="number" step="0.01" name="Discount" class="form-control" value="@Model.Discount" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Loyalty Discount (%)</label>
+                                    <input type="number" step="0.01" name="LoyaltyDiscount" class="form-control" value="@Model.LoyaltyDiscount" />
+                                </div>
+                                <div class="form-group">
+                                    <label>VAT Rate (%)</label>
+                                    <input type="number" step="0.01" name="VAT" class="form-control" value="@Model.VAT" />
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary save-btn">Save All Fee Changes</button>
+                        </div>
+                    }
                 }
             </div>
         </form>
@@ -468,7 +588,7 @@
 @* Special Items Modals *@
 @foreach (var item in Model.SpecialItems)
 {
-    <div class="modal fade" id="editSpecial-@item.SpecialItemID" tabindex="-1">
+    <div class="modal fade" id="updateSpecial-@item.SpecialItemID" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white">
@@ -597,3 +717,32 @@
         </div>
     </div>
 }
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this item?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a id="confirmDeleteBtn" class="btn btn-danger" href="#">OK</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var deleteModal = document.getElementById('deleteModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget; // Button that triggered the modal
+        var url = button.getAttribute('data-url'); // Get the URL from data-url
+        var confirmBtn = deleteModal.querySelector('#confirmDeleteBtn');
+        confirmBtn.setAttribute('href', url); // Set the href of the modal's Delete button
+    });
+</script>

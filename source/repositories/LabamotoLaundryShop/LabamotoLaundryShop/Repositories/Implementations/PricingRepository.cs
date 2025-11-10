@@ -30,11 +30,11 @@ namespace LabamotoLaundryShop.Repositories.Implementations
         {
             using (var conn = _context.CreateConnection())
             {
-                conn.Execute("INSERT INTO PRICING_PACKAGES (PackageName, PricePerKg, MinimumKg, Status) VALUES (@PackageName,@PricePerKg,@MinimumKg,@Status)", model);
+                conn.Execute("INSERT INTO PRICING_PACKAGES (PackageName, PricePerKg, MinimumKg, Status) VALUES (@PackageName,@PricePerKg,@MinimumKg, 'Active')", model);
             }
         }
 
-        public void UpdateRegular(PricingPackage model)
+        public void EditRegular(PricingPackage model)
         {
             using (var conn = _context.CreateConnection())
             {
@@ -76,7 +76,7 @@ namespace LabamotoLaundryShop.Repositories.Implementations
         {
             using (var conn = _context.CreateConnection())
             {
-                conn.Execute(@"UPDATE SPECIAL_ITEMS SET ItemName=@ItemName, Type=@Type, Category=@Category, PricePerPiece=@PricePerPiece, ProcessingTime=@ProcessingTime, Status=@Status WHERE SpecialItemID=@SpecialItemID", model);
+                conn.Execute(@"UPDATE SPECIAL_ITEMS SET ItemName=@ItemName, PricePerPiece=@PricePerPiece, Category=@Category, ProcessingTime=@ProcessingTime, Status=@Status WHERE SpecialItemID=@SpecialItemID", model);
             }
         }
 
@@ -114,7 +114,7 @@ namespace LabamotoLaundryShop.Repositories.Implementations
         {
             using (var conn = _context.CreateConnection())
             {
-                conn.Execute(@"UPDATE DRYCLEAN_ITEMS SET ItemName=@ItemName, Type=@Type, PricePerPiece=@PricePerPiece, ProcessingTime=@ProcessingTime, Status=@Status WHERE DryCleanItemID=@DryCleanItemID", model);
+                conn.Execute(@"UPDATE DRYCLEAN_ITEMS SET ItemName=@ItemName, PricePerPiece=@PricePerPiece, ProcessingTime=@ProcessingTime, Status=@Status WHERE DryCleanItemID=@DryCleanItemID", model);
             }
         }
 
@@ -167,5 +167,64 @@ namespace LabamotoLaundryShop.Repositories.Implementations
                 conn.Execute("UPDATE BUSINESS_SETTINGS SET SettingValue=@amount WHERE SettingKey=@feeName", new { feeName, amount });
             }
         }
+
+        public IEnumerable<PricingPackage> GetAllPricing()
+        {
+            var allPricing = new List<PricingPackage>();
+
+            // Regular Laundry
+            allPricing.AddRange(GetAllRegularLaundry());
+
+            // Special Items
+            allPricing.AddRange(GetAllSpecialItems().Select(x => new PricingPackage
+            {
+                PackageName = x.ItemName,
+                PricePerKg = x.PricePerPiece, // map PricePerPiece to PricePerKg
+                MinimumKg = 0, // not applicable
+                Status = x.Status,
+                Unit = "piece"
+            }));
+
+            // Dry Clean Items
+            allPricing.AddRange(GetAllDryClean().Select(x => new PricingPackage
+            {
+                PackageName = x.ItemName,
+                PricePerKg = x.PricePerPiece, // map PricePerPiece to PricePerKg
+                MinimumKg = 0,
+                Status = x.Status,
+                Unit = "piece"
+            }));
+
+            // Add-Ons
+            allPricing.AddRange(GetAllAddOns().Select(x => new PricingPackage
+            {
+                PackageName = x.ServiceName,
+                PricePerKg = decimal.TryParse(x.Price, out decimal price) ? price : 0, // convert string to decimal
+                MinimumKg = 0,
+                Status = x.Status,
+                Unit = "unit"
+            }));
+
+            return allPricing;
+        }
+
+        public void AddOrUpdatePricing(PricingPackage item)
+        {
+            var existing = GetAllRegularLaundry().FirstOrDefault(p => p.PackageName == item.PackageName);
+            if (existing != null)
+            {
+                existing.PricePerKg = item.PricePerKg;
+                existing.MinimumKg = item.MinimumKg;
+                existing.Status = item.Status;
+                existing.Unit = item.Unit;
+                EditRegular(existing); // reuse your existing update method
+            }
+            else
+            {
+                AddRegular(item); // reuse your existing add method
+            }
+        }
+
+
     }
 }
